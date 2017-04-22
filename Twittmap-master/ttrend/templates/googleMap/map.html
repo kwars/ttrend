@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+  <head>
+      <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@flickr" />
+    <meta name="twitter:title" content="Small Island Developing States Photo Submission" />
+    <meta name="twitter:description" content="View the album on Flickr." />
+    <meta name="twitter:image" content="https://farm6.staticflickr.com/5510/14338202952_93595258ff_z.jpg" />
+    <style>
+      
+	   html { height: 100% }
+body { height: 100%; margin: 0px; padding: 0px }
+#container { width: 100%; height: 100% }
+.alpha60 {
+    /* 用于不支持RGBa的浏览器 */
+    background: rgb(0, 0, 0);
+    /* RGBa, 透明度0.6 */
+    background: rgba(0, 0, 0, 0.2);
+}
+#nav { z-index: 1; position: absolute;
+    
+    padding-top: 10px;
+    padding-left: 20%;
+    
+    padding-right: 20%;
+    
+    
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+}
+#map { width: 100%; height: 100% }
+.brandcolor {
+    /*color: rgb(40, 164, 201) !important;*/
+    color: darkblue !important;
+    font-family: 'Ewert', cursive;
+}
+
+h3 {
+    text-align: center;
+}
+    </style>
+    </head>
+  <body>
+      <div id="container">
+          
+          <div id="nav"   >
+              
+              <nav class="navbar navbar-default alpha60">
+                  <div class="container-fluid">
+                      <!-- Brand and toggle get grouped for better mobile display -->
+                      <div class="navbar-header ">
+                          
+                          <a class="navbar-brand brandcolor" href="#"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span>   Twitter Map</a>
+                      </div>
+                      
+                      <!-- Collect the nav links, forms, and other content for toggling -->
+                      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                          <form id="listform" class="navbar-form navbar-right">{% csrf_token %}
+                              <select name="ddlSearchWords" class="form-control" id="ddlSearchWords">
+                                  <option value="Sample" selected>Sample</option>
+                                  <option value="Love">Love</option>
+                                  <option value="Travel">Travel</option>
+                                  <option value="Trump">Trump</option>
+                                  <option value="Pizza">Pizza</option>
+                                  <option value="Money">Money</option>
+                                </select>
+                                      <div class="form-group">
+                                  <input type="text" name="keyword" id="keyword" class="form-control " placeholder="Input keywords">
+                                      </div>
+                              <input type="submit" name="submit_btn" value="Search" onsubmit="initMap()"/>
+                          </form>
+                      </div><!-- /.navbar-collapse -->
+                  </div><!-- /.container-fluid -->
+              </nav>
+              
+          </div>
+
+	
+    <div id="map">
+	</div>
+	
+	</div>
+    <script>
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+    }
+
+        function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+            function initMap() {
+                var uluru = {lat: 20, lng: -30};
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 3,
+                    center: uluru
+                });
+                var red_marker = 'http://maps.google.com/mapfiles/ms/icons/red.png';
+                var green_marker = 'http://maps.google.com/mapfiles/ms/icons/green.png';
+                var blue_marker = 'http://maps.google.com/mapfiles/ms/icons/blue.png';
+                var sentiment_icon = {positive: {marker_icon: green_marker},negative: {marker_icon: red_marker},neutral: {marker_icon: blue_marker}};
+              
+
+                {#---Ajax---#}
+
+                $('#listform').on('submit', function (event) {
+                    event.preventDefault();
+                    var selectedword = $('input[name="keyword"]').val();
+                    searchKeyword = selectedword;
+                    if(searchKeyword==""){
+                        var selectedword = document.getElementById("ddlSearchWords");
+                        searchKeyword = selectedword.options[selectedword.selectedIndex].value;
+                    }
+                    console.log(searchKeyword);
+                    $.ajax({
+                        url: '/post/',
+                        type: 'POST',
+                        data: {Search: searchKeyword, csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+
+                        success: function (json) {
+                            var map = new google.maps.Map(document.getElementById('map'), {
+                                zoom: 3,
+                                center: uluru
+                            });
+
+                            console.log(json);
+                            console.log(json.length);
+                            console.log(json.coordinates);
+                            
+                            alert("updating "+json.length.hits+" tweets!");
+                            
+                
+                            for(i=0; i<json.length.hits; i++){
+                                console.log(json.coordinates[i].lat);
+                                console.log(json.coordinates[i].lng);
+                                var myLatlng = new google.maps.LatLng(parseFloat(json.coordinates[i].lat),parseFloat(json.coordinates[i].lng));
+                                console.log(myLatlng);
+                                var tweetc = [json.tweets[i].tweet, json.tweets[i].sentiment]
+                                
+                                var marker = new google.maps.Marker({
+                                    map: map,
+                                    position: myLatlng,
+                                    icon: sentiment_icon[json.tweets[i].sentiment].marker_icon
+                                });
+                           
+                                showinfomessage(marker,tweetc);
+                           
+                            }
+                           
+                           
+                           }
+                    });
+                
+                function showinfomessage(marker, tweetc){
+                    marker.addListener('click', function(){
+                                       var infowindow = new google.maps.InfoWindow();
+                                       var contentString = '<div id="content"> <div id="siteNotice"> </div>'+
+                                       '<h1 id="firstHeading" class="firstHeading">Tweet</h1>'+
+                                       '<div id="bodyContent">'+
+                                       '<p><b>Tweet: </b>'+tweetc[0]+'</p>'+
+                                       '<p><b>Sentiment: </b>'+tweetc[1]+'</p>'+
+                                       'position: '+marker.position+'</p>'+
+                                       '</div>'+
+                                       '</div>';
+                                       infowindow.setContent(contentString);
+                                       infowindow.open(map,marker);
+                                       });
+                }
+                });
+            }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4csnr7jq9Dj7boojhCEaNq5xmSwQzvtM&callback=initMap">
+    </script>
+  </body>
+</html>
