@@ -22,8 +22,8 @@ QUEUE_NAME = "kwqueue"
 WAIT_TIME = 10 # time to wait between each SQS poll
 TOPIC_NAME = "tweettrend"
 SNS_ARN = "arn:aws:sns:us-east-1:744025627651:tweettrend"
-aws_access_key_id="AKIAIVDRP7X5JZUE533A"
-aws_secret_access_key="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"
+aws_access_key_id=""
+aws_secret_access_key=""
 REGION = "us-east-1"
 
 awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, REGION, 'es')
