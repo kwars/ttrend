@@ -6,10 +6,10 @@ import json
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 import requests
 #Enter your twitterAPI keys here 
-consumer_key = 'MZ8fXiLq1KhxO11UwAbjW99cm'
-consumer_secret = 'Dn50Md2gWlbVxybHAKgI1Knob71ugiF7Q7gIJClN33M1GYySCj'
-access_token = '52647948-xnlwpbETyFNX0JmEcdrsB7FLI42fTimAbyXK1xgOM'
-access_secret = 'xiYL3QEpPmNmbR0AhqphvS2s2Tyf0V0FOOcpKRb92d4kL'
+consumer_key = ''
+consumer_secret = ''
+access_token = ''
+access_secret = ''
 
 sqs = boto3.client('sqs')
 
