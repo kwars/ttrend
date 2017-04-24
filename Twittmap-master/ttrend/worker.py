@@ -33,8 +33,8 @@ queue = sqs.get_queue_by_name(QueueName='kwqueue')
 
 natural_language_understanding = NaturalLanguageUnderstandingV1(
     version='2017-02-27',
-    username='d043d63b-871b-49c0-b4b9-fcdd3eeae5fc',
-    password='3n7ACAsDUCaI'
+    username='',
+    password=''
     )
 
 es = Elasticsearch(
